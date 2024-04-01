@@ -42,8 +42,11 @@ def populate_data(db_session, data):
 
     groups = db_session.query(Groups).all()
     
-    for user in data['users']:
-        group = random.choice(groups + [None])  # None == don't join any groups
+    for i, user in enumerate(data['users']):
+        if i % 5 == 0:
+            group = None  # None == don't join any groups
+        else:    
+            group = random.choice(groups)
         new_user = Users(name=user, group=group)
         db_session.add(new_user)
     db_session.commit()
