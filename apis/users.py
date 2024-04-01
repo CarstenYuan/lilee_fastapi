@@ -13,7 +13,7 @@ def add_user(name: str, group_id: int = None):
     return {"item_type": "User", "name": user.name, "id": user.id, "group_id": user.group_id}
 
 
-@users_statistic_router.post("/DeleteUser", tags=users_tag)
+@users_statistic_router.delete("/DeleteUser", tags=users_tag)
 def delete_user(id: int):
     user = delete_item(Users, id)
     if user:
