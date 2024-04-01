@@ -1,5 +1,6 @@
 from database import MySQLDB
-# from models.base import Base
+from models import Users
+
 
 db_manager = MySQLDB()
 db_session = db_manager.SessionLocal()
@@ -37,3 +38,8 @@ def delete_item(model_class, item_id):
         raise e
     finally:
         db_session.close()
+
+
+def can_delete_group(group_id: int) -> bool:
+    users_count = db_session.query(Users).filter(Users.group_id == group_id).count()
+    return users_count == 0

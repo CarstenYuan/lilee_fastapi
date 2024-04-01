@@ -1,9 +1,12 @@
 from fastapi import APIRouter, HTTPException
-from apis.general import add_item, delete_item
+from apis.general import add_item, delete_item, can_delete_group
 from models import Groups
 
 groups_statistic_router = APIRouter()
 groups_tag = ['Groups APIs']
+
+
+
 
 
 @groups_statistic_router.post("/addGroup", tags=groups_tag)
@@ -13,6 +16,9 @@ def add_group(name: str):
 
 @groups_statistic_router.delete("/DeleteGroup", tags=groups_tag)
 def delete_group(id: int):
+    if not can_delete_group(id):
+        raise HTTPException(status_code=400, detail="Group cannot be deleted because it has members.")
+    
     group = delete_item(Groups, id)
     if group:
         return {"item_type": "Group", "name": group.name, "id": group.id}
