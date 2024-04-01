@@ -13,12 +13,21 @@ host = config['database']['host']
 port = config['database']['port']
 dbname = config['database']['dbname']
 
-engine_url = f"mysql+pymysql://{username}:{password}@{host}:{port}/{dbname}"
-engine = create_engine(engine_url)
-SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
+class MySQLDB:
+    def __init__(self):
+        engine_url = f"mysql+pymysql://{username}:{password}@{host}:{port}/{dbname}"
+        self.engine = create_engine(engine_url)
+        if not database_exists(self.engine.url):
+            create_database(self.engine.url)
+        self.SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=self.engine)
 
-def init_db():
-    if not database_exists(engine.url):
-        create_database(engine.url)
-    Base.metadata.create_all(bind=engine)
+    def get_db(self):
+        db = self.SessionLocal()
+        try:
+            yield db
+        finally:
+            db.close()
+
+    def init_db(self):
+        Base.metadata.create_all(bind=self.engine)
