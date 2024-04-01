@@ -43,3 +43,13 @@ def delete_item(model_class, item_id):
 def can_delete_group(group_id: int) -> bool:
     users_count = db_session.query(Users).filter(Users.group_id == group_id).count()
     return users_count == 0
+
+
+def get_single_item(model_class, item_id):
+    try:
+        item = db_session.query(model_class).filter(model_class.id == item_id).one_or_none()
+        if not item:
+            return None
+        return item
+    finally:
+        db_session.close()
