@@ -1,5 +1,5 @@
 from fastapi import APIRouter, HTTPException
-from apis.general import add_item, delete_item, can_delete_group, get_single_item, get_all_item
+from apis.general import add_item, delete_item, can_delete_group, get_single_item, get_all_items
 from models import Groups
 
 groups_statistic_router = APIRouter()
@@ -33,5 +33,5 @@ def get_single_group(id: int):
 
 @groups_statistic_router.get("/GetAllGroups", tags=groups_tag)
 def get_all_groups():
-    groups = get_all_item(Groups)
+    groups = get_all_items(Groups)
     return groups

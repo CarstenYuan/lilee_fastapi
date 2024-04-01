@@ -1,5 +1,6 @@
-from fastapi import APIRouter, HTTPException
-from apis.general import add_item, delete_item, get_single_item, get_all_item
+from fastapi import APIRouter, HTTPException, Query
+from typing import Optional
+from apis.general import add_item, delete_item, get_single_item, get_all_items
 from models import Users
 
 users_statistic_router = APIRouter()
@@ -30,6 +31,6 @@ def get_single_user(id: int):
 
 
 @users_statistic_router.get("/GetAllUsers", tags=users_tag)
-def get_all_users():
-    users = get_all_item(Users)
+def get_all_users(filter: Optional[str] = Query(None)):
+    users = get_all_items(Users, filter=filter)
     return users

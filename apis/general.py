@@ -54,10 +54,13 @@ def get_single_item(model_class, item_id):
         db_session.close()
 
 
-def get_all_items(model_class):
+def get_all_items(model_class, filter: str = None):
     db_session = db_manager.SessionLocal()
     try:
-        item = db_session.query(model_class).all()
+        query = db_session.query(model_class)
+        if filter:
+            query = query.filter(model_class.name.like(f"%{filter}%"))
+        item = query.all()
         return item
     finally:
         db_session.close()
