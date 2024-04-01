@@ -1,5 +1,5 @@
 from fastapi import APIRouter, HTTPException
-from apis.general import add_item, delete_item, get_single_item
+from apis.general import add_item, delete_item, get_single_item, get_all_item
 from models import Users
 
 users_statistic_router = APIRouter()
@@ -27,3 +27,9 @@ def get_single_user(id: int):
     if user:
         return {"item_type": "User", "name": user.name, "id": user.id, "group_id": user.group_id}
     raise HTTPException(status_code=404, detail=f"User with id {id} does not exist.")
+
+
+@users_statistic_router.get("/GetAllUsers", tags=users_tag)
+def get_all_users():
+    users = get_all_item(Users)
+    return users

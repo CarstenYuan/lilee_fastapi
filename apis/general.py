@@ -3,14 +3,10 @@ from models import Users
 
 
 db_manager = MySQLDB()
-db_session = db_manager.SessionLocal()
-
-
-def validate_name():
-    pass
 
 
 def add_item(model_class, **kwargs):
+    db_session = db_manager.SessionLocal()
     try:
         item = model_class(**kwargs)
         db_session.add(item)
@@ -25,6 +21,7 @@ def add_item(model_class, **kwargs):
 
 
 def delete_item(model_class, item_id):
+    db_session = db_manager.SessionLocal()
     try:
         item = db_session.query(model_class).filter(model_class.id == item_id).one_or_none()
         if item:
@@ -41,15 +38,26 @@ def delete_item(model_class, item_id):
 
 
 def can_delete_group(group_id: int) -> bool:
+    db_session = db_manager.SessionLocal()
     users_count = db_session.query(Users).filter(Users.group_id == group_id).count()
     return users_count == 0
 
 
 def get_single_item(model_class, item_id):
+    db_session = db_manager.SessionLocal()
     try:
         item = db_session.query(model_class).filter(model_class.id == item_id).one_or_none()
         if not item:
             return None
+        return item
+    finally:
+        db_session.close()
+
+
+def get_all_items(model_class):
+    db_session = db_manager.SessionLocal()
+    try:
+        item = db_session.query(model_class).all()
         return item
     finally:
         db_session.close()

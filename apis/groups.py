@@ -1,12 +1,9 @@
 from fastapi import APIRouter, HTTPException
-from apis.general import add_item, delete_item, can_delete_group, get_single_item
+from apis.general import add_item, delete_item, can_delete_group, get_single_item, get_all_item
 from models import Groups
 
 groups_statistic_router = APIRouter()
 groups_tag = ['Groups APIs']
-
-
-
 
 
 @groups_statistic_router.post("/addGroup", tags=groups_tag)
@@ -32,3 +29,9 @@ def get_single_group(id: int):
     if group:
         return {"item_type": "Group", "name": group.name, "id": group.id}
     raise HTTPException(status_code=404, detail=f"Group with id {id} does not exist.")
+
+
+@groups_statistic_router.get("/GetAllGroups", tags=groups_tag)
+def get_all_groups():
+    groups = get_all_item(Groups)
+    return groups
