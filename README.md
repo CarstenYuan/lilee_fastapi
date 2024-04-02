@@ -150,4 +150,9 @@ Visit website: 127.0.0.1:9000/
 #### Groups APIs
 - Mostly the same as the above APIs, but 2 differences need to be clarified
     - No name filter for 'GetAllGroups' API
-    - Cannot delete a group that has at least 1 member inside it: {"detail": "Group cannot be deleted because it has members."}
+    - Cannot delete a group that has at least 1 member inside it
+```
+{
+  "detail": "Group cannot be deleted because it has members."
+}
+```
