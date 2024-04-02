@@ -1,0 +1,17 @@
+version: '3.8'
+services:
+  web-server:
+    build: .
+    ports:
+      - "9000:9000"
+    depends_on:
+      - mysqlDB
+    environment:
+      - DATABASE_URL=mysql+pymysql://root:1qaz2wsx@mysqlDB:3306/lilee
+  mysqlDB:
+    image: mysql:8.0
+    environment:
+      MYSQL_ROOT_PASSWORD: 1qaz2wsx
+      MYSQL_DATABASE: lilee
+    ports:
+      - "3308:3306"
