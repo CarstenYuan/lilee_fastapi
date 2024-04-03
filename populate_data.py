@@ -6,7 +6,6 @@ from database import MySQLDB
 
 def populate_data(db, data):
     for group in data['groups']:
-        print(group)
         new_group = Groups(name=group)
         db.add(new_group)
     db.commit()
