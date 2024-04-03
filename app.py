@@ -3,7 +3,7 @@ from apis import router
 from uvicorn import run as uvicorn_run
 
 
-app = FastAPI(title='LiLee Web Server APIs', docs_url='/')
+app = FastAPI(title='LiLee Web Server APIs', docs_url='/swagger')
 app.include_router(router)
 
 
