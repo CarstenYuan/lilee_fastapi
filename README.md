@@ -38,9 +38,10 @@
 > git clone https://github.com/CarstenYuan/lilee_fastapi.git
 > cd lilee_fastapi
 
-# activate virtual environment
+# activate the virtual environment
 > python -m venv venv
-> ./venv/Scripts/activate
+> ./venv/Scripts/activate (Windows 10)
+> source venv/bin/activate (macOS)
 
 # install python dependencies
 > pip install -r requirements.txt
