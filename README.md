@@ -97,7 +97,7 @@ Visit the swagger web page: 127.0.0.1:9000/swagger
   }
 ]
 ```
----
+##### ------------------------------------------------------------
 #### Create User: add a new user
 
 - Input a name and an optional group_id, then click execute. **(Note: group_id has to exist)**
@@ -135,7 +135,7 @@ Visit the swagger web page: 127.0.0.1:9000/swagger
   "detail": "User with id 95 does not exist."
 }
 ```
----
+##### ------------------------------------------------------------
 #### Delete User: Remove a user by id
 
 - Input a valid id
@@ -160,7 +160,7 @@ Visit the swagger web page: 127.0.0.1:9000/swagger
   "detail": "User with id 92 does not exist."
 }
 ```
----
+##### ----------------------------------------------------------------------------------------------------
 ### Groups APIs
 - Mostly the same as the above APIs, but several differences need to be clarified
     1. No name filter for 'GetAllGroups' API
