@@ -9,7 +9,7 @@ from sqlalchemy_utils import database_exists, create_database
 
 class MySQLDB:
     def __init__(self):
-        config_file = os.getenv("DB_CONFIG_FILE")
+        config_file = os.getenv("DB_CONFIG_FILE", "./db.config")
         config = configparser.ConfigParser()
         config.read(config_file)
 
