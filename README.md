@@ -22,7 +22,7 @@
 
 #### Groups Table
 | id | name |
-|--------|---------|
+|--------|--------------|
 | 1      | Basketball   |
 | 2      | Math         |
 | 3      | Literature   |
@@ -47,6 +47,9 @@
 
 # db initial migration
 > alembic upgrade head
+
+# Optional: populate data for tests
+> python populate_data.py
 
 # run FastAPI app
 > python ./app.py
