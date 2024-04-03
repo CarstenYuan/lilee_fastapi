@@ -1,6 +1,4 @@
 import os
-import json
-import random
 import configparser
 
 from models import Base, Groups, Users
@@ -30,11 +28,6 @@ class MySQLDB:
             create_database(self.engine.url)
             # create users and groups tables
             self.create_tables() 
-            # populate data
-            with open('example_data.json', 'r') as f:
-                data = json.load(f)
-                print(data)
-            self.populate_data(data)
         
     def get_db(self):
         db = self.SessionLocal()
@@ -45,26 +38,3 @@ class MySQLDB:
 
     def create_tables(self):
         Base.metadata.create_all(bind=self.engine)
-
-    def populate_data(self, data):
-        db = self.SessionLocal()
-
-        for group in data['groups']:
-            print(group)
-            new_group = Groups(name=group)
-            db.add(new_group)
-        db.commit()
-
-        groups = db.query(Groups).all()
-        
-        for i, user in enumerate(data['users']):
-            if i % 3 == 0:
-                group = None  # None == don't join any groups
-            else:
-                group = random.choice(groups)
-            new_user = Users(name=user, group=group)
-            db.add(new_user)
-        db.commit()
-
-        print("Successfully populated data!")
-        db.close()
