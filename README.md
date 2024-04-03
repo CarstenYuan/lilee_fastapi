@@ -38,9 +38,9 @@
 > git clone https://github.com/CarstenYuan/lilee_fastapi.git
 > cd lilee_fastapi
 
-# activate virtual environment
+# activate the virtual environment
 > python -m venv venv
-> ./venv/Scripts/activate
+> ./venv/Scripts/activate (Windows 10)
 
 # install python dependencies
 > pip install -r requirements.txt
@@ -52,7 +52,7 @@
 > python populate_data.py
 
 # run FastAPI app
-> python ./app.py
+> python ./app.py --config "localDB.config"
 ```
 #### Docker
 - #### Prerequisites:
