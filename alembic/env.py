@@ -4,12 +4,14 @@ from sqlalchemy import pool
 from alembic import context
 
 from sqlalchemy_utils import database_exists, create_database
+import os
 import configparser
 
 
 # read db.config
+config_file = os.getenv("DB_CONFIG_FILE", "./db.config")
 db_config = configparser.ConfigParser()
-db_config.read('db.config')
+db_config.read(config_file)
 
 username = db_config['database']['username']
 password = db_config['database']['password']
