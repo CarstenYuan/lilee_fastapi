@@ -11,6 +11,7 @@
     - Delete Group: Remove a group by id. Prevent deletion if the group has at least one user and provide an appropriate error message.
     - Read Single Group: Retrieve details of a specific group by id.
     - Read All Groups: List all groups.
+---
 ### Database Design
 #### Users Table
 | id | name | group_id |
@@ -27,15 +28,19 @@
 | 3      | Literature   |
 
 - Relationship: A user can belong to zero or one group; a group can have zero or many users.
-
+---
 ### Launch services
 #### Locally
-- ##### Prerequisites:
+- #### Prerequisites:
     - Have local MySQL DB installed and running, with username 'root' and password '1qaz2wsx'
 ```
 # git clone this repository
 > git clone https://github.com/CarstenYuan/lilee_fastapi.git
 > cd lilee_fastapi
+
+# activate virtual environment
+> python -m venv venv
+> ./venv/Scripts/activate
 
 # install python dependencies
 > pip install -r requirements.txt
@@ -47,7 +52,7 @@
 > python ./app.py
 ```
 #### Docker
-- ##### Prerequisites:
+- #### Prerequisites:
     - Have Docker installed and running
     - Port 3308 isn't occupied yet, otherwise, you'll need to change the port for mysqlDB inside the docker-compose.yml file
 ```
@@ -58,19 +63,22 @@
 # run docker-compose.yml
 > docker-compose up -d
 ```
-
+---
 ### Testing
 ```
-Visit website: 127.0.0.1:9000/
+Visit the swagger web page: 127.0.0.1:9000/swagger
 ```
-#### Users APIs
-- Read All Users: List all users with optional filtering by partial name match.
-```
-1. Click execute directly without any name filter
-> You should see 90 users in the response body if you haven't created or deleted any users.
+### Users APIs
+#### Read All Users: List all users with optional filtering by partial name match.
 
-2. With a name filter
-> Input 'Ja' in the name filter, and you will see the response body like this:
+- Execute **without** any name filter
+
+> You should see 90 users in the response body (if you haven't created or deleted any users.)`
+
+- Execute **with** a name filter
+
+> Input 'Ja' in the name filter for example, and you will see the response body as below:
+```
 [
   {
     "group_id": 13,
@@ -89,11 +97,12 @@ Visit website: 127.0.0.1:9000/
   }
 ]
 ```
+---
+#### Create User: add a new user
 
-- Create User: add a new user
+- Input a name and an optional group_id, then click execute. **(Note: group_id has to exist)**
+> You will see the response body as below:
 ```
-1. Input a name and an optional group_id, then click execute. (Note: group_id has to exist)
-> You will see 200 and the response body like this:
 {
   "item_type": "User",
   "name": "Haw Yuan",
@@ -108,49 +117,54 @@ Visit website: 127.0.0.1:9000/
   "id": 92,
   "group_id": 5
 }
+```
 
-2. Use 'Read Single User' to verify
-> Input the id from the user you just created.
-> If the user exists in the table:
+#### Use **Read Single User** to verify: input the id from the user you just created.
+- If the user exists in the table:
+```
 {
   "item_type": "User",
   "name": "Carsten Yuan",
   "id": 92,
   "group_id": 5
 }
-
-> If not
+```
+- If the user doesn't exist:
+```
 {
   "detail": "User with id 95 does not exist."
 }
 ```
+---
+#### Delete User: Remove a user by id
 
-- Delete User: Remove a user by id
+- Input a valid id
+> The response body will show who was deleted
 ```
-1.
-> Input a valid id, and the response body will show who was deleted
 {
   "item_type": "User",
   "name": "Carsten Yuan",
   "id": 92,
   "group_id": 5
 }
-
-> If id doesn't exist
+```
+- If id doesn't exist
+```
 {
   "detail": "User with id 95 does not exist."
 }
-
-2. Use 'Read Single User' to verify
+```
+#### Use **Read Single User** to verify
+```
 {
   "detail": "User with id 92 does not exist."
 }
 ```
-
-#### Groups APIs
-- Mostly the same as the above APIs, but 2 differences need to be clarified
-    - No name filter for 'GetAllGroups' API
-    - Cannot delete a group that has at least 1 member inside it
+---
+### Groups APIs
+- Mostly the same as the above APIs, but several differences need to be clarified
+    1. No name filter for 'GetAllGroups' API
+    2. Cannot delete a group that has at least 1 member inside it
 ```
 {
   "detail": "Group cannot be deleted because it has members."
