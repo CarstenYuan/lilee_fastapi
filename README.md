@@ -45,14 +45,10 @@
 # install python dependencies
 > pip install -r requirements.txt
 
-# db initial migration
-> alembic upgrade head
-
-# Optional: populate data for tests
-> python populate_data.py
-
 # run FastAPI app
-> python ./app.py
+# This will also execute the command 'alembic upgrad head' for initial migration
+# Optional: -p is for populating mock data for tests
+> python ./app.py --config ./localDB.config -p
 ```
 #### Docker
 - #### Prerequisites:
