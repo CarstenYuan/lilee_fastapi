@@ -30,30 +30,6 @@
 - Relationship: A user can belong to zero or one group; a group can have zero or many users.
 ---
 ### Launch services
-#### Locally
-- #### Prerequisites:
-    - Have local MySQL DB installed and running, with username 'root' and password '1qaz2wsx'
-```
-# git clone this repository
-> git clone https://github.com/CarstenYuan/lilee_fastapi.git
-> cd lilee_fastapi
-
-# activate the virtual environment
-(Windows 10)
-> python -m venv venv
-> ./venv/Scripts/activate
-(macOS)
-> python3 -m venv venv
-> source venv/bin/activate
-
-# install python dependencies
-> pip install -r requirements.txt
-
-# run FastAPI app
-# This will also execute the command 'alembic upgrad head' for initial migration
-# Optional: -p is for populating mock data for tests
-> python ./app.py --config ./localDB.config -p
-```
 #### Docker
 - #### Prerequisites:
     - Have Docker installed and running
@@ -66,6 +42,7 @@
 # run docker-compose.yml
 > docker-compose up -d
 ```
+#### Locally (for easier debugging or testing) ==> Future Work
 ---
 ### Testing
 ```
