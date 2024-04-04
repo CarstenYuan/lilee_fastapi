@@ -9,7 +9,7 @@ import configparser
 
 
 # read db.config
-config_file = os.getenv("DB_CONFIG_FILE", "./db.config")
+config_file = "./db.config"
 db_config = configparser.ConfigParser()
 db_config.read(config_file)
 
