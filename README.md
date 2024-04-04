@@ -39,9 +39,12 @@
 > cd lilee_fastapi
 
 # activate the virtual environment
+(Windows 10)
 > python -m venv venv
-> ./venv/Scripts/activate (Windows 10)
-> source venv/bin/activate (macOS)
+> ./venv/Scripts/activate
+(macOS)
+> python3 -m venv venv
+> source venv/bin/activate
 
 # install python dependencies
 > pip install -r requirements.txt
