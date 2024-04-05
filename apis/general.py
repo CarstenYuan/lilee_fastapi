@@ -1,6 +1,6 @@
 import random
 from database import MySQLDB
-from models import Users
+from models import Users, Groups
 
 
 def add_item(model_class, **kwargs):
@@ -89,3 +89,12 @@ def update_is_activate(model_class, item_id, is_activate):
         raise e
     finally:
         db_session.close()
+
+
+def can_join_group(group_id: int) -> bool:
+    db_manager = MySQLDB()
+    db_session = db_manager.SessionLocal()
+    group = db_session.query(Groups).filter(Groups.id == group_id).one_or_none()
+    is_activate = group.is_activate
+    print(is_activate)
+    return is_activate == 1

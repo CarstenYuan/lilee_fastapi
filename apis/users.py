@@ -6,6 +6,7 @@ from apis.general import (
                             get_single_item,
                             get_all_items,
                             update_is_activate,
+                            can_join_group,
                         )
 from models import Users
 
@@ -15,7 +16,8 @@ users_tag = ['Users APIs']
 
 @users_statistic_router.post("/AddUser", tags=users_tag)
 def add_user(name: str, group_id: int = None):
-    # TODO: constraint group_id --> try except
+    if not can_join_group(group_id):
+        raise HTTPException(status_code=400, detail="You cannot join a deactivated group.")
     user = add_item(Users, name=name, group_id=group_id)
     return {"item_type": "User", "name": user.name, "id": user.id, "group_id": user.group_id, "is_activate": user.is_activate}
 
