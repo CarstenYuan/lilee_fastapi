@@ -40,11 +40,14 @@ def delete_item(model_class, item_id):
         db_session.close()
 
 
-def can_delete_group(group_id: int) -> bool:
+def has_member(group_id: int) -> bool:
     db_manager = MySQLDB()
     db_session = db_manager.SessionLocal()
-    users_count = db_session.query(Users).filter(Users.group_id == group_id).count()
-    return users_count == 0
+    group = db_session.query(Groups).filter(Groups.id == group_id).one_or_none()
+    if group:
+        users_count = db_session.query(Users).filter(Users.group_id == group_id).count()
+        return users_count != 0
+    raise HTTPException(status_code=404, detail=f"Group with id {group_id} does not exist.")
 
 
 def get_single_item(model_class, item_id):
