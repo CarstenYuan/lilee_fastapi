@@ -21,4 +21,4 @@ class MySQLDB:
 
         self.engine_url = f"mysql+pymysql://{self.username}:{self.password}@{self.host}:{self.port}/{self.dbname}"
         self.engine = create_engine(self.engine_url)
-        self.SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=self.engine)
+        self.SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=self.engine, expire_on_commit=False)
