@@ -5,19 +5,23 @@ from database import MySQLDB
 
 
 def populate_data(db, data):
+    creators = ['root', 'carsten']
+
     for group in data['groups']:
-        new_group = Groups(name=group)
+        new_group = Groups(name=group, creator=random.choice(creators))
         db.add(new_group)
     db.commit()
 
     groups = db.query(Groups).all()
     
+    assign_none = [random.randint(0, len(data)-1) for _ in range(30)]
+    
     for i, user in enumerate(data['users']):
-        if i % 3 == 0:
+        if i in assign_none:
             group = None  # None == don't join any groups
         else:
             group = random.choice(groups)
-        new_user = Users(name=user, group=group)
+        new_user = Users(name=user, group=group, creator=random.choice(creators))
         db.add(new_user)
     db.commit()
 
