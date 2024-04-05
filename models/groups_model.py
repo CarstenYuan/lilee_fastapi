@@ -13,5 +13,6 @@ class Groups(Base):
     createdTime = Column(DateTime, default=func.now())
     modifier = Column(String(255))
     modifiedTime = Column(DateTime, onupdate=func.now())
+    is_activate = Column(Boolean, default=True)
 
     users = relationship("Users", back_populates="group")
