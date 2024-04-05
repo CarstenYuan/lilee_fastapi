@@ -2,6 +2,8 @@ import random
 from fastapi import HTTPException
 from database import MySQLDB
 from models import Users, Groups
+from sqlalchemy.exc import NoResultFound
+from sqlalchemy.orm.exc import MultipleResultsFound
 
 
 def add_item(model_class, **kwargs):
@@ -100,3 +102,28 @@ def can_join_group(group_id: int) -> bool:
         is_activate = group.is_activate
         return is_activate == 1
     raise HTTPException(status_code=404, detail=f"Group with id {group_id} does not exist.")
+
+
+def update_items(model_class, item_id, kwargs: dict):
+    db_manager = MySQLDB()
+    db_session = db_manager.SessionLocal()
+    try:
+        item = db_session.query(model_class).filter_by(id=item_id).one_or_none()
+        if item:
+            has_changes = False
+
+            for key, new_value in kwargs.items():
+                if getattr(item, key) != new_value:
+                    setattr(item, key, new_value)
+                    has_changes = True
+            if has_changes:
+                db_session.commit()
+            else:
+                db_session.rollback()
+            return item
+        return None
+    except NoResultFound:
+        print(f"No item found with ID {item_id}")
+        db_session.rollback()
+    finally:
+        db_session.close()
