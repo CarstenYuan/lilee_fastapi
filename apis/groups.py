@@ -6,7 +6,7 @@ from models import Groups
 from apis.general import (
                             add_item,
                             delete_item,
-                            can_delete_group,
+                            has_member,
                             get_single_item,
                             get_all_items,
                             update_is_activate,
@@ -31,7 +31,7 @@ def add_group(name: str):
 
 @groups_statistic_router.delete("/deleteGroup/{id}", tags=groups_tag)
 def delete_group(id: int):
-    if not can_delete_group(id):
+    if has_member(id):
         raise HTTPException(status_code=400, detail="Group cannot be deleted because it has members.")
     
     group = delete_item(Groups, id)
@@ -56,7 +56,7 @@ def get_all_groups():
 
 @groups_statistic_router.patch("/updateIsGroupActivate/{id}", tags=groups_tag)
 def update_is_group_activate(id: int, is_activate: bool):
-    if (not is_activate) and (not can_delete_group(id)):
+    if (not is_activate) and (has_member(id)):
         raise HTTPException(status_code=400, detail="Group cannot be deactivated because it has members.")
     group = update_is_activate(Groups, id, is_activate)
     if group:
@@ -67,6 +67,10 @@ def update_is_group_activate(id: int, is_activate: bool):
 @groups_statistic_router.put("/updateGroupInfo/{id}", tags=groups_tag)
 def update_group_info(id: int, update_request: UpdateGroupInfoRequest = Body(...)):
     update_data = update_request.dict(exclude_none=True)
+
+    if update_data['is_activate'] is not None and has_member(id):
+        raise HTTPException(status_code=400, detail="Group cannot be deactivated because it has members.")
+
     group = update_items(Groups, id, update_data)
     if group:
         return group

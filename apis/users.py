@@ -25,8 +25,8 @@ class UpdateUserInfoRequest(BaseModel):
 
 
 @users_statistic_router.post("/addUser", tags=users_tag)
-def add_user(name: str, group_id: int = None):
-    if not can_join_group(group_id):
+def add_user(name: str, group_id: Optional[int] = None):
+    if (group_id is not None) and (not can_join_group(group_id)):
         raise HTTPException(status_code=400, detail="You cannot join a deactivated group.")
     user = add_item(Users, name=name, group_id=group_id)
     return {"item_type": "User", "name": user.name, "id": user.id, "group_id": user.group_id, "is_activate": user.is_activate}
@@ -65,6 +65,7 @@ def update_is_user_activate(id: int, is_activate: bool):
 @users_statistic_router.put("/updateUserInfo/{id}", tags=users_tag)
 def update_user_info(id: int, update_request: UpdateUserInfoRequest = Body(...)):
     update_data = update_request.dict(exclude_none=True)
+    can_join_group(update_data['group_id'])
     user = update_items(Users, id, update_data)
     if user:
         return user
