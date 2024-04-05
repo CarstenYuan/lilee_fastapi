@@ -1,3 +1,4 @@
+import random
 from database import MySQLDB
 from models import Users
 
@@ -64,5 +65,27 @@ def get_all_items(model_class, filter: str = None):
             query = query.filter(model_class.name.like(f"%{filter}%"))
         item = query.all()
         return item
+    finally:
+        db_session.close()
+
+
+def update_is_activate(model_class, item_id, is_activate):
+    test_modifiers = ["Alice", "Bob", "Charlie", "David", "Eve"]
+    modifier = random.choice(test_modifiers)
+
+    db_manager = MySQLDB()
+    db_session = db_manager.SessionLocal()
+    try:
+        item = db_session.query(model_class).filter(model_class.id == item_id).one_or_none()
+        if item:
+            item.is_activate = is_activate
+            item.modifier = modifier
+            db_session.commit()
+            return item
+        else:
+            return None
+    except Exception as e:
+        db_session.rollback()
+        raise e
     finally:
         db_session.close()
