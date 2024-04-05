@@ -1,5 +1,12 @@
 from fastapi import APIRouter, HTTPException
-from apis.general import add_item, delete_item, can_delete_group, get_single_item, get_all_items
+from apis.general import (
+                            add_item,
+                            delete_item,
+                            can_delete_group,
+                            get_single_item,
+                            get_all_items,
+                            update_is_activate,
+                        )
 from models import Groups
 
 groups_statistic_router = APIRouter()
@@ -35,3 +42,13 @@ def get_single_group(id: int):
 def get_all_groups():
     groups = get_all_items(Groups)
     return groups
+
+
+@groups_statistic_router.patch("/UpdateIsGroupActivate", tags=groups_tag)
+def update_is_group_activate(id: int, is_activate: bool):
+    if (not is_activate) and (not can_delete_group(id)):
+        raise HTTPException(status_code=400, detail="Group cannot be deactivated because it has members.")
+    group = update_is_activate(Groups, id, is_activate)
+    if group:
+        return {"item_type": "Group", "name": group.name, "id": group.id, "is_activate": group.is_activate}
+    raise HTTPException(status_code=404, detail=f"Group with id {id} does not exist.")
