@@ -1,3 +1,3 @@
 from .base import Base
-from .users import Users
+from .users_model import Users
 from .groups import Groups
