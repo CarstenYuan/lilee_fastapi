@@ -1,4 +1,5 @@
 import random
+from fastapi import HTTPException
 from database import MySQLDB
 from models import Users, Groups
 
@@ -95,6 +96,7 @@ def can_join_group(group_id: int) -> bool:
     db_manager = MySQLDB()
     db_session = db_manager.SessionLocal()
     group = db_session.query(Groups).filter(Groups.id == group_id).one_or_none()
-    is_activate = group.is_activate
-    print(is_activate)
-    return is_activate == 1
+    if group:
+        is_activate = group.is_activate
+        return is_activate == 1
+    raise HTTPException(status_code=404, detail=f"Group with id {group_id} does not exist.")
