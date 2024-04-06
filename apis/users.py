@@ -29,14 +29,14 @@ def add_user(name: str, group_id: Optional[int] = None):
     if (group_id is not None) and (not can_join_group(group_id)):
         raise HTTPException(status_code=400, detail="You cannot join a deactivated group.")
     user = add_item(Users, name=name, group_id=group_id)
-    return {"item_type": "User", "name": user.name, "id": user.id, "group_id": user.group_id, "is_activate": user.is_activate}
+    return user
 
 
 @users_statistic_router.delete("/deleteUser/{id}", tags=users_tag)
 def delete_user(id: int):
     user = delete_item(Users, id)
     if user:
-        return {"item_type": "User", "name": user.name, "id": user.id, "group_id": user.group_id, "is_activate": user.is_activate}
+        return user
     raise HTTPException(status_code=404, detail=f"User with id {id} does not exist.")
 
 
@@ -44,7 +44,7 @@ def delete_user(id: int):
 def get_single_user(id: int):
     user = get_single_item(Users, id)
     if user:
-        return {"item_type": "User", "name": user.name, "id": user.id, "group_id": user.group_id, "is_activate": user.is_activate}
+        return user
     raise HTTPException(status_code=404, detail=f"User with id {id} does not exist.")
 
 
@@ -58,7 +58,7 @@ def get_all_users(filter: Optional[str] = Query(None)):
 def update_is_user_activate(id: int, is_activate: bool):
     user = update_is_activate(Users, id, is_activate)
     if user:
-        return {"item_type": "User", "name": user.name, "id": user.id, "group_id": user.group_id, "is_activate": user.is_activate}
+        return user
     raise HTTPException(status_code=404, detail=f"User with id {id} does not exist.")
 
 

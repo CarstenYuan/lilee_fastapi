@@ -26,7 +26,7 @@ class UpdateGroupInfoRequest(BaseModel):
 @groups_statistic_router.post("/addGroup", tags=groups_tag)
 def add_group(name: str):
     group = add_item(Groups, name=name)
-    return {"item_type": "Group", "name": group.name, "id": group.id}
+    return group
 
 
 @groups_statistic_router.delete("/deleteGroup/{id}", tags=groups_tag)
@@ -36,7 +36,7 @@ def delete_group(id: int):
     
     group = delete_item(Groups, id)
     if group:
-        return {"item_type": "Group", "name": group.name, "id": group.id}
+        return group
     raise HTTPException(status_code=404, detail=f"Group with id {id} does not exist.")
 
 
@@ -44,7 +44,7 @@ def delete_group(id: int):
 def get_single_group(id: int):
     group = get_single_item(Groups, id)
     if group:
-        return {"item_type": "Group", "name": group.name, "id": group.id}
+        return group
     raise HTTPException(status_code=404, detail=f"Group with id {id} does not exist.")
 
 
@@ -60,7 +60,7 @@ def update_is_group_activate(id: int, is_activate: bool):
         raise HTTPException(status_code=400, detail="Group cannot be deactivated because it has members.")
     group = update_is_activate(Groups, id, is_activate)
     if group:
-        return {"item_type": "Group", "name": group.name, "id": group.id, "is_activate": group.is_activate}
+        return group
     raise HTTPException(status_code=404, detail=f"Group with id {id} does not exist.")
 
 
@@ -68,7 +68,7 @@ def update_is_group_activate(id: int, is_activate: bool):
 def update_group_info(id: int, update_request: UpdateGroupInfoRequest = Body(...)):
     update_data = update_request.dict(exclude_none=True)
 
-    if update_data['is_activate'] is not None and has_member(id):
+    if update_data['is_activate'] == False and has_member(id):
         raise HTTPException(status_code=400, detail="Group cannot be deactivated because it has members.")
 
     group = update_items(Groups, id, update_data)

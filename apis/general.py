@@ -5,12 +5,16 @@ from models import Users, Groups
 from sqlalchemy.exc import NoResultFound
 from sqlalchemy.orm.exc import MultipleResultsFound
 
+test_modifiers = ["Alice", "Bob", "Charlie", "David", "Eve"]
+test_creators = ['root', 'carsten']
+
 
 def add_item(model_class, **kwargs):
     db_manager = MySQLDB()
     db_session = db_manager.SessionLocal()
     try:
         item = model_class(**kwargs)
+        item.creator = random.choice(test_creators)
         db_session.add(item)
         db_session.commit()
         db_session.refresh(item)
@@ -76,7 +80,6 @@ def get_all_items(model_class, filter: str = None):
 
 
 def update_is_activate(model_class, item_id, is_activate):
-    test_modifiers = ["Alice", "Bob", "Charlie", "David", "Eve"]
     modifier = random.choice(test_modifiers)
 
     db_manager = MySQLDB()
@@ -120,6 +123,8 @@ def update_items(model_class, item_id, kwargs: dict):
                     setattr(item, key, new_value)
                     has_changes = True
             if has_changes:
+                modifier = random.choice(test_modifiers)
+                item.modifier = modifier
                 db_session.commit()
             else:
                 db_session.rollback()
