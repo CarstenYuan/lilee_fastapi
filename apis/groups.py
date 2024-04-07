@@ -54,6 +54,21 @@ def get_all_groups():
     return groups
 
 
+@groups_statistic_router.get("/getActiveGroups", tags=groups_tag)
+def get_active_groups():
+    groups = get_all_items(Groups)
+    active_groups = []
+    for group in groups:
+        if group.is_activate:
+            active_groups.append(
+                {
+                'id': group.id,
+                'name': group.name
+                }
+            )
+    return active_groups
+
+
 @groups_statistic_router.patch("/updateIsGroupActivate/{id}", tags=groups_tag)
 def update_is_group_activate(id: int, is_activate: bool):
     if (not is_activate) and (has_member(id)):
