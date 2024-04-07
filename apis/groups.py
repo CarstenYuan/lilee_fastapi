@@ -18,14 +18,18 @@ groups_statistic_router = APIRouter()
 groups_tag = ['Groups APIs']
 
 
+class AddGroupInfoRequest(BaseModel):
+    name: str = Field(description="The new name of the group.")
+
+
 class UpdateGroupInfoRequest(BaseModel):
     name: Optional[str] = Field(None, description="The new name of the group.")
     is_activate: Optional[bool] = Field(None, description="The new activation status of the group.")
 
 
 @groups_statistic_router.post("/addGroup", tags=groups_tag)
-def add_group(name: str):
-    group = add_item(Groups, name=name)
+def add_group(add_request: AddGroupInfoRequest = Body(...)):
+    group = add_item(Groups, name=add_request['name'])
     return group
 
 
