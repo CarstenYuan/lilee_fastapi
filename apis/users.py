@@ -1,7 +1,7 @@
 from fastapi import APIRouter, HTTPException, Query, Body
 from pydantic import BaseModel, Field
 from typing import Optional
-from models import Users
+from models import Users, Groups
 
 from apis.general import (
                             add_item,
@@ -51,7 +51,36 @@ def get_single_user(id: int):
 @users_statistic_router.get("/getAllUsers", tags=users_tag)
 def get_all_users(filter: Optional[str] = Query(None)):
     users = get_all_items(Users, filter=filter)
-    return users
+    users_list = []
+    for user in users:
+        curr_id = user.id
+
+        curr_name = user.name
+        curr_group_id = user.group_id
+        group = get_single_item(Groups, curr_group_id)
+        curr_group_name = group.name if group else None
+
+        curr_creator = user.creator
+        curr_createdTime = user.createdTime
+        curr_modifier = user.modifier
+        curr_modifiedTime = user.modifiedTime
+        curr_is_activate = user.is_activate
+
+        users_list.append(
+            {
+            'id': curr_id,
+            'name': curr_name,
+            'group_id': curr_group_id,
+            'group': curr_group_name,
+
+            'creator': curr_creator,
+            'createdTime': curr_createdTime,
+            'modifier': curr_modifier,
+            'modifiedTime': curr_modifiedTime,
+            'is_activate': curr_is_activate
+            }
+        )
+    return users_list
 
 
 @users_statistic_router.patch("/updateIsUserActivate/{id}", tags=users_tag)
