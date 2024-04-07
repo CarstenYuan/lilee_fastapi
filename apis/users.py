@@ -18,6 +18,11 @@ users_statistic_router = APIRouter()
 users_tag = ['Users APIs']
 
 
+class AddUserInfoRequest(BaseModel):
+    name: str = Field(None, description="The new name of the user.")
+    group_id: Optional[int] = Field(None, description="The new group ID of the user.")
+
+
 class UpdateUserInfoRequest(BaseModel):
     name: Optional[str] = Field(None, description="The new name of the user.")
     group_id: Optional[int] = Field(None, description="The new group ID of the user.")
@@ -25,10 +30,11 @@ class UpdateUserInfoRequest(BaseModel):
 
 
 @users_statistic_router.post("/addUser", tags=users_tag)
-def add_user(name: str, group_id: Optional[int] = None):
-    if (group_id is not None) and (not can_join_group(group_id)):
+def add_user(add_request: AddUserInfoRequest = Body(...)):
+    add_data = add_request.dict()
+    if (add_data['group_id'] is not None) and (not can_join_group(add_data['group_id'])):
         raise HTTPException(status_code=400, detail="You cannot join a deactivated group.")
-    user = add_item(Users, name=name, group_id=group_id)
+    user = add_item(Users, name=add_data['name'], group_id=add_data['group_id'])
     return user
 
 
