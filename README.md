@@ -33,7 +33,6 @@
 #### Docker
 - #### Prerequisites:
     - Have Docker installed and running
-    - Have MySQL installed and running, version 8.0.X
     - Port 3308 isn't occupied yet, otherwise, you'll need to change the port for 'mysqlDB' inside the docker-compose.yml file
 ```
 # git clone this repository
