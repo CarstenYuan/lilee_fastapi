@@ -19,7 +19,7 @@ users_tag = ['Users APIs']
 
 
 class AddUserInfoRequest(BaseModel):
-    name: str = Field(None, description="The new name of the user.")
+    name: str = Field(description="The new name of the user.")
     group_id: Optional[int] = Field(None, description="The new group ID of the user.")
 
 
