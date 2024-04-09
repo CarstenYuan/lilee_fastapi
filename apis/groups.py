@@ -29,7 +29,8 @@ class UpdateGroupInfoRequest(BaseModel):
 
 @groups_statistic_router.post("/addGroup", tags=groups_tag)
 def add_group(add_request: AddGroupInfoRequest = Body(...)):
-    group = add_item(Groups, name=add_request['name'])
+    add_data = add_request.dict()
+    group = add_item(Groups, name=add_data['name'])
     return group
 
 
