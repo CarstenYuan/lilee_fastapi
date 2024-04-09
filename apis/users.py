@@ -23,12 +23,12 @@ class AddUserInfoRequest(BaseModel):
     group_id: Optional[int] = Field(None, description="The new group ID of the user.")
 
     @validator("group_id")
-    def is_id_valid(cls, id):
-        if id == 0:
-            id = None
-        if (id is not None) and (not can_join_group(id)):
+    def is_group_id_valid(cls, g_id):
+        if g_id == 0:
+            g_id = None
+        if (g_id is not None) and (not can_join_group(g_id)):
             raise HTTPException(status_code=400, detail="You cannot join a deactivated group.")
-        return id
+        return g_id
 
 class UpdateUserInfoRequest(BaseModel):
     name: Optional[str] = Field(None, description="The new name of the user.")
