@@ -1,5 +1,5 @@
 from fastapi import APIRouter, HTTPException, Query, Body
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, validator
 from typing import Optional
 from models import Users, Groups
 
@@ -22,6 +22,13 @@ class AddUserInfoRequest(BaseModel):
     name: str = Field(description="The new name of the user.")
     group_id: Optional[int] = Field(None, description="The new group ID of the user.")
 
+    @validator("group_id")
+    def is_id_valid(cls, id):
+        if id == 0:
+            id = None
+        if (id is not None) and (not can_join_group(id)):
+            raise HTTPException(status_code=400, detail="You cannot join a deactivated group.")
+        return id
 
 class UpdateUserInfoRequest(BaseModel):
     name: Optional[str] = Field(None, description="The new name of the user.")
@@ -32,8 +39,6 @@ class UpdateUserInfoRequest(BaseModel):
 @users_statistic_router.post("/addUser", tags=users_tag)
 def add_user(add_request: AddUserInfoRequest = Body(...)):
     add_data = add_request.dict()
-    if (add_data['group_id'] is not None) and (not can_join_group(add_data['group_id'])):
-        raise HTTPException(status_code=400, detail="You cannot join a deactivated group.")
     user = add_item(Users, name=add_data['name'], group_id=add_data['group_id'])
     return user
 
