@@ -36,10 +36,6 @@ class UpdateUserInfoRequest(BaseModel):
     group_id: Optional[int] = Field(-1, description="The updated group ID of the user.")
     is_activate: Optional[int] = Field(-1, description="The updated activation status of the user.")
 
-    @validator("name")
-    def is_name_valid(cls, username):
-        return username
-
     @validator("group_id")
     def is_group_id_valid(cls, g_id):
         if g_id == 0:
