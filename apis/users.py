@@ -30,10 +30,31 @@ class AddUserInfoRequest(BaseModel):
             raise HTTPException(status_code=400, detail="You cannot join a deactivated group.")
         return g_id
 
+
 class UpdateUserInfoRequest(BaseModel):
-    name: Optional[str] = Field(None, description="The new name of the user.")
-    group_id: Optional[int] = Field(None, description="The new group ID of the user.")
-    is_activate: Optional[bool] = Field(None, description="The new activation status of the user.")
+    name: Optional[str] = Field("", description="The updated name of the user.")
+    group_id: Optional[int] = Field(-1, description="The updated group ID of the user.")
+    is_activate: Optional[int] = Field(-1, description="The updated activation status of the user.")
+
+    @validator("name")
+    def is_name_valid(cls, username):
+        return username
+
+    @validator("group_id")
+    def is_group_id_valid(cls, g_id):
+        if g_id == 0:
+            g_id = None
+        if (g_id not in (None, -1)) and (not can_join_group(g_id)):
+            raise HTTPException(status_code=400, detail="You cannot join a deactivated group.")
+        return g_id
+    
+    # This is actually unnecessary
+    @validator("is_activate")
+    def transform_status(cls, status):
+        if status == 0:
+            return False
+        elif status == 1:
+            return True
 
 
 @users_statistic_router.post("/addUser", tags=users_tag)
@@ -104,8 +125,13 @@ def update_is_user_activate(id: int, is_activate: bool):
 
 @users_statistic_router.put("/updateUserInfo/{id}", tags=users_tag)
 def update_user_info(id: int, update_request: UpdateUserInfoRequest = Body(...)):
-    update_data = update_request.dict(exclude_none=True)
-    can_join_group(update_data['group_id'])
+    update_data = update_request.dict()
+    if update_data["name"] == "":  # default value: remain the same
+        del update_data["name"]
+    if update_data["group_id"] == -1:  # default value: remain the same
+        del update_data["group_id"]
+    if update_data["is_activate"] not in (0, 1):  # default value: remain the same
+        del update_data["is_activate"]
     user = update_items(Users, id, update_data)
     if user:
         return user
