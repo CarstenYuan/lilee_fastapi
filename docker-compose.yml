@@ -8,6 +8,8 @@ services:
       - mysqlDB
     environment:
       - DATABASE_URL=mysql+pymysql://root:1qaz2wsx@mysqlDB:3306/lilee
+    networks:
+      - lilee-network
   mysqlDB:
     image: mysql:8.0
     environment:
@@ -15,3 +17,9 @@ services:
       MYSQL_DATABASE: lilee
     ports:
       - "3308:3306"
+    networks:
+      - lilee-network
+
+networks:
+  lilee-network:
+    external: true
