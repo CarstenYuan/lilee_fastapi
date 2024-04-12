@@ -1,17 +1,14 @@
 import random
 from fastapi import HTTPException
-from database import MySQLDB
 from models import Users, Groups
 from sqlalchemy.exc import NoResultFound
-from sqlalchemy.orm.exc import MultipleResultsFound
+
 
 test_modifiers = ["Alice", "Bob", "Charlie", "David", "Eve"]
 test_creators = ['root', 'carsten']
 
 
-def add_item(model_class, **kwargs):
-    db_manager = MySQLDB()
-    db_session = db_manager.SessionLocal()
+def add_item(model_class, db_session, **kwargs):
     try:
         item = model_class(**kwargs)
         item.creator = random.choice(test_creators)
@@ -26,9 +23,16 @@ def add_item(model_class, **kwargs):
         db_session.close()
 
 
-def delete_item(model_class, item_id):
-    db_manager = MySQLDB()
-    db_session = db_manager.SessionLocal()
+def can_join_group(group_id: int, db_session) -> bool:
+    print("can_join_group can_join_group can_join_group can_join_group can_join_group:", group_id)
+    group = get_single_item(Groups, group_id, db_session)
+    if group:
+        is_activate = group.is_activate
+        return is_activate
+    raise HTTPException(status_code=404, detail=f"Group with id {group_id} does not exist.")
+
+
+def delete_item(model_class, item_id, db_session):
     try:
         item = db_session.query(model_class).filter(model_class.id == item_id).one_or_none()
         if item:
@@ -44,9 +48,7 @@ def delete_item(model_class, item_id):
         db_session.close()
 
 
-def has_member(group_id: int) -> bool:
-    db_manager = MySQLDB()
-    db_session = db_manager.SessionLocal()
+def has_member(group_id: int, db_session) -> bool:
     group = db_session.query(Groups).filter(Groups.id == group_id).one_or_none()
     if group:
         users_count = db_session.query(Users).filter(Users.group_id == group_id).count()
@@ -54,9 +56,7 @@ def has_member(group_id: int) -> bool:
     raise HTTPException(status_code=404, detail=f"Group with id {group_id} does not exist.")
 
 
-def get_single_item(model_class, item_id):
-    db_manager = MySQLDB()
-    db_session = db_manager.SessionLocal()
+def get_single_item(model_class, item_id, db_session):
     try:
         item = db_session.query(model_class).filter(model_class.id == item_id).one_or_none()
         if not item:
@@ -66,9 +66,7 @@ def get_single_item(model_class, item_id):
         db_session.close()
 
 
-def get_all_items(model_class, filter: str = None):
-    db_manager = MySQLDB()
-    db_session = db_manager.SessionLocal()
+def get_all_items(model_class, db_session, filter: str = None):
     try:
         query = db_session.query(model_class)
         if filter:
@@ -79,11 +77,9 @@ def get_all_items(model_class, filter: str = None):
         db_session.close()
 
 
-def update_is_activate(model_class, item_id, is_activate):
+def update_is_activate(model_class, item_id, is_activate, db_session):
     modifier = random.choice(test_modifiers)
 
-    db_manager = MySQLDB()
-    db_session = db_manager.SessionLocal()
     try:
         item = db_session.query(model_class).filter(model_class.id == item_id).one_or_none()
         if item:
@@ -100,19 +96,7 @@ def update_is_activate(model_class, item_id, is_activate):
         db_session.close()
 
 
-def can_join_group(group_id: int) -> bool:
-    db_manager = MySQLDB()
-    db_session = db_manager.SessionLocal()
-    group = db_session.query(Groups).filter(Groups.id == group_id).one_or_none()
-    if group:
-        is_activate = group.is_activate
-        return is_activate == 1
-    raise HTTPException(status_code=404, detail=f"Group with id {group_id} does not exist.")
-
-
-def update_items(model_class, item_id, kwargs: dict):
-    db_manager = MySQLDB()
-    db_session = db_manager.SessionLocal()
+def update_items(model_class, item_id, kwargs: dict, db_session):
     try:
         item = db_session.query(model_class).filter_by(id=item_id).one_or_none()
         if item:
