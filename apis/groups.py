@@ -1,7 +1,9 @@
-from fastapi import APIRouter, HTTPException, Body
+from fastapi import APIRouter, HTTPException, Body, Depends
 from pydantic import BaseModel, Field
+from sqlalchemy.orm import Session
 from typing import Optional
 from models import Groups
+from database import get_db
 
 from apis.general import (
                             add_item,
@@ -28,40 +30,40 @@ class UpdateGroupInfoRequest(BaseModel):
 
 
 @groups_statistic_router.post("/addGroup", tags=groups_tag)
-def add_group(add_request: AddGroupInfoRequest = Body(...)):
+def add_group(add_request: AddGroupInfoRequest = Body(...), db_session: Session = Depends(get_db)):
     add_data = add_request.dict()
-    group = add_item(Groups, name=add_data['name'])
+    group = add_item(Groups, db_session, name=add_data['name'])
     return group
 
 
 @groups_statistic_router.delete("/deleteGroup/{id}", tags=groups_tag)
-def delete_group(id: int):
-    if has_member(id):
+def delete_group(id: int, db_session: Session = Depends(get_db)):
+    if has_member(id, db_session):
         raise HTTPException(status_code=400, detail="Group cannot be deleted because it has members.")
     
-    group = delete_item(Groups, id)
+    group = delete_item(Groups, id, db_session)
     if group:
         return group
     raise HTTPException(status_code=404, detail=f"Group with id {id} does not exist.")
 
 
 @groups_statistic_router.get("/getSingleGroup/{id}", tags=groups_tag)
-def get_single_group(id: int):
-    group = get_single_item(Groups, id)
+def get_single_group(id: int, db_session: Session = Depends(get_db)):
+    group = get_single_item(Groups, id, db_session)
     if group:
         return group
     raise HTTPException(status_code=404, detail=f"Group with id {id} does not exist.")
 
 
 @groups_statistic_router.get("/getAllGroups", tags=groups_tag)
-def get_all_groups():
-    groups = get_all_items(Groups)
+def get_all_groups(db_session: Session = Depends(get_db)):
+    groups = get_all_items(Groups, db_session)
     return groups
 
 
 @groups_statistic_router.get("/getActiveGroups", tags=groups_tag)
-def get_active_groups():
-    groups = get_all_items(Groups)
+def get_active_groups(db_session: Session = Depends(get_db)):
+    groups = get_all_items(Groups, db_session)
     active_groups = []
     for group in groups:
         if group.is_activate:
@@ -75,23 +77,23 @@ def get_active_groups():
 
 
 @groups_statistic_router.patch("/updateIsGroupActivate/{id}", tags=groups_tag)
-def update_is_group_activate(id: int, is_activate: bool):
-    if (not is_activate) and (has_member(id)):
+def update_is_group_activate(id: int, is_activate: bool, db_session: Session = Depends(get_db)):
+    if (not is_activate) and (has_member(id, db_session)):
         raise HTTPException(status_code=400, detail="Group cannot be deactivated because it has members.")
-    group = update_is_activate(Groups, id, is_activate)
+    group = update_is_activate(Groups, id, is_activate, db_session)
     if group:
         return group
     raise HTTPException(status_code=404, detail=f"Group with id {id} does not exist.")
 
 
 @groups_statistic_router.put("/updateGroupInfo/{id}", tags=groups_tag)
-def update_group_info(id: int, update_request: UpdateGroupInfoRequest = Body(...)):
+def update_group_info(id: int, update_request: UpdateGroupInfoRequest = Body(...), db_session: Session = Depends(get_db)):
     update_data = update_request.dict(exclude_none=True)
 
-    if update_data['is_activate'] == False and has_member(id):
+    if update_data['is_activate'] == False and has_member(id, db_session):
         raise HTTPException(status_code=400, detail="Group cannot be deactivated because it has members.")
 
-    group = update_items(Groups, id, update_data)
+    group = update_items(Groups, id, update_data, db_session)
     if group:
         return group
     raise HTTPException(status_code=404, detail=f"Group with id {id} does not exist.")
