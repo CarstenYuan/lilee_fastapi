@@ -24,7 +24,6 @@ def add_item(model_class, db_session, **kwargs):
 
 
 def can_join_group(group_id: int, db_session) -> bool:
-    print("can_join_group can_join_group can_join_group can_join_group can_join_group:", group_id)
     group = get_single_item(Groups, group_id, db_session)
     if group:
         is_activate = group.is_activate
@@ -115,7 +114,7 @@ def update_items(model_class, item_id, kwargs: dict, db_session):
             return item
         return None
     except NoResultFound:
-        print(f"No item found with ID {item_id}")
+        # print(f"No item found with ID {item_id}")
         db_session.rollback()
     finally:
         db_session.close()
